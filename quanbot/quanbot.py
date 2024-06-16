@@ -11,6 +11,8 @@ client = OpenAI(
     api_key=st.secrets["apikey"],
 )
 
+chat_history = []
+
 def chat_with_gpt(userprompt):
     global chat_history
     
