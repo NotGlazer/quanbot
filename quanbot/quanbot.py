@@ -11,11 +11,14 @@ client = OpenAI(
     api_key=st.secrets["apikey"],
 )
 
-chat_history = []
+# Initialize chat history in session state
+if "chat_history" not in st.session_state:
+    st.session_state["chat_history"] = []
 
 def chat_with_gpt(userprompt):
-    global chat_history
-    
+    # Retrieve chat history from session state
+    chat_history = st.session_state["chat_history"]
+
     now = datetime.now()
     current_date = now.strftime("hôm nay là ngày %d tháng %m năm %Y")
 
@@ -28,7 +31,7 @@ def chat_with_gpt(userprompt):
         {"role": "user", "content": userprompt}
     ]
 
-    # Add messages to global chat history
+    # Add messages to chat history in session state
     chat_history.extend(messages)
 
     # Call OpenAI API to get assistant's response
@@ -41,8 +44,11 @@ def chat_with_gpt(userprompt):
     # Get assistant's response
     assistant_response = chat_completion.choices[0].message.content.strip()
 
-    # Append assistant's response to global chat history
+    # Append assistant's response to chat history in session state
     chat_history.append({"role": "assistant", "content": assistant_response})
+
+    # Update chat history in session state
+    st.session_state["chat_history"] = chat_history
 
     return assistant_response
 
