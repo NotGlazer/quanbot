@@ -11,46 +11,26 @@ client = OpenAI(
     api_key=st.secrets["apikey"],
 )
 
-# Initialize chat history in session state
-if "chat_history" not in st.session_state:
-    st.session_state["chat_history"] = []
-
 def chat_with_gpt(userprompt):
-    # Retrieve chat history from session state
-    chat_history = st.session_state["chat_history"]
-
     now = datetime.now()
     current_date = now.strftime("hôm nay là ngày %d tháng %m năm %Y")
 
     # Define the prerequisite prompt
     prerequisite_prompt = f"Tên bạn là Lê Nhật Quân, một bot thân thiện, cởi mở và tử tế chỉ có thể trả lời bằng tiếng Việt, tuyệt đối không được sử dụng ngôn ngữ nào khác. {current_date}."
 
-    # Create the messages list with the prerequisite prompt and user's input
+    # Create the messages list with the prerequisite prompt
     messages = [
         {"role": "system", "content": prerequisite_prompt},
         {"role": "user", "content": userprompt}
     ]
 
-    # Add messages to chat history in session state
-    chat_history.extend(messages)
-
-    # Call OpenAI API to get assistant's response
     chat_completion = client.chat.completions.create(
         messages=messages,
         model="gpt-3.5-turbo",
         temperature=0.3
     )
 
-    # Get assistant's response
-    assistant_response = chat_completion.choices[0].message.content.strip()
-
-    # Append assistant's response to chat history in session state
-    chat_history.append({"role": "assistant", "content": assistant_response})
-
-    # Update chat history in session state
-    st.session_state["chat_history"] = chat_history
-
-    return assistant_response
+    return chat_completion.choices[0].message.content.strip()
 
 # Initialize chat history
 if "responses" not in st.session_state:
